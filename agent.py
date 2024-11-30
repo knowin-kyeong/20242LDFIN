@@ -19,8 +19,8 @@ class TetrisAI(object):
         self.tetris_app = TetrisApp()
 
         ''' set features wanted here MAKE SURE TO CHANGE FUNCTIONS FOR EVALUATION BELOW'''
-        # self.features = ("max_height", "cumulative_height", "relative_height", "roughness", "hole_count", "rows_cleared")
-        self.features = ("cumulative_height", "roughness", "hole_count", "rows_cleared")
+        self.features = ("max_height", "cumulative_height", "relative_height", "roughness", "hole_count", "rows_cleared")
+        # self.features = ("cumulative_height", "roughness", "hole_count", "rows_cleared")
         self.weights = None
 
     '''
@@ -74,7 +74,8 @@ class TetrisAI(object):
                             "board": action_board,
                             "stone": numpy.copy(cur_state["stone"]),
                             "action_col": action_col,
-                            "action_rot": action_rot
+                            "action_rot": action_rot,
+                            "action_rows_cleared": self.tetris_app.cleared_lines - cur_state["cleared_lines"]
                         }
                     )
 
@@ -96,12 +97,12 @@ class TetrisAI(object):
                     "stone": bs['stone'],
                     "action_col": bs['action_col'],
                     "action_rot": bs['action_rot'],
-                    "eval": self.eval_board(bs['board'])
+                    "eval": self.eval_board(bs['board'], bs['action_rows_cleared'])
                 }
             )
         return eval_board_and_stone
 
-    def eval_board(self, board):
+    def eval_board(self, board, rows_cleared):
 
         if not (hasattr(self, "weights")):
             raise ValueError("TetrisAI has no weights")
@@ -110,15 +111,17 @@ class TetrisAI(object):
         evals = [self.get_cumulative_height(board) * self.weights['cumulative_height'],
                  self.get_roughness(board) * self.weights['roughness'],
                  self.get_hole_count(board) * self.weights['hole_count'],
-                 self.get_rows_cleared(board) * self.weights['rows_cleared']]
-        # score.append(self.get_max_height(board) * self.weights["max_height"])
-        # score.append(self.get_relative_height(board) * self.weights["relative_height"])
+                 rows_cleared * self.weights['rows_cleared'],
+                 self.get_max_height(board) * self.weights["max_height"],
+                 self.get_relative_height(board) * self.weights["relative_height"]]
 
         return {
             "cumulative_height": self.get_cumulative_height(board),
             "roughness": self.get_roughness(board),
             "hole_count": self.get_hole_count(board),
-            "rows_cleared": self.get_rows_cleared(board),
+            "rows_cleared": rows_cleared,
+            "max_height": self.get_max_height(board),
+            "relative_height": self.get_relative_height(board),
             "weights": self.weights,
             "eval_score": sum(evals)
         }
@@ -135,7 +138,7 @@ class TetrisAI(object):
         for y, row in enumerate(board[::-1]):
             for x, val in enumerate(row):
                 if val != 0 and val != 9:
-                    heights[x] = y
+                    heights[x] = y + 1
         return heights
 
     '''
@@ -193,23 +196,11 @@ class TetrisAI(object):
                 # if below max column height and is a zero
                 if y < levels[x] and val == 0:
                     holes += 1
-
         return holes
 
     '''
         Check how many rows will be cleared in this config
     '''
-
-    def get_rows_cleared(self, board):
-        # starts at -1 to account for bottom row which
-        # is always all 1
-        rows_cleared = -1
-
-        for row in board:
-            if 0 not in row:
-                rows_cleared += 1
-
-        return rows_cleared
 
     def analyze_evaluate_result(self, eval_board_and_stone):
         max_eval = None
@@ -248,7 +239,8 @@ class TetrisAI(object):
 
         if seed is not None:
             if not (isinstance(seed, tuple) and len(seed) == (len(self.features))):
-                raise ValueError('Seed not properly formatted. Make sure it is a tuple and has {} elements'.format(len(self.features)))
+                raise ValueError('Seed not properly formatted. Make sure it is a tuple and has {} elements'.format(
+                    len(self.features)))
 
             for idx in range(len(self.features)):
                 self.weights[self.features[idx]] = random.uniform(-0.1, 0.1) + seed[idx]
@@ -271,8 +263,7 @@ if __name__ == '__main__':
     # AI.set_init_weights()
 
     # Pre-trained result weights
-    # cumulative_height, roughness, hole_count, rows_cleared
-    trained_best = [-0.6922153812581191, -0.9517118925804267, -0.7283494112187532, 0.9145101436488878]
+    trained_best = [-0.009809423006750917, -0.8944574293834231, -0.047150364377604115, -0.17131812086072928, 0.07313879798706346, -0.8273080800989953]
     AI.load_weights(trained_best)
 
     while not AI.tetris_app.game_over and AI.tetris_app.drop_blocks < 1000:
@@ -286,7 +277,7 @@ if __name__ == '__main__':
         best_ebs = AI.analyze_evaluate_result(ebs_dict)
 
         if best_ebs is not None:
-            print(best_ebs['action_col'], best_ebs['action_rot'])
+            # print(best_ebs['action_col'], best_ebs['action_rot'])
             AI.tetris_app.move_rotation_drop(best_ebs['action_col'], best_ebs['action_rot'])
         else:
             AI.tetris_app.move_rotation_drop(0, 0)
