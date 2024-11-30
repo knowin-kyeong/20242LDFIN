@@ -212,7 +212,7 @@ class TetrisAI(object):
         return best_ebs
 
     def play_game(self):
-        while not self.tetris_app.game_over and self.tetris_app.drop_blocks < 1000:
+        while not self.tetris_app.game_over and self.tetris_app.drop_blocks < 500:
             self.tetris_app.new_stone()
 
             bs_dict = self.get_possible_boards()
@@ -260,13 +260,14 @@ class TetrisAI(object):
 if __name__ == '__main__':
     AI = TetrisAI()
 
-    # AI.set_init_weights()
+    #AI.set_init_weights()
 
     # Pre-trained result weights
-    trained_best = [-0.009809423006750917, -0.8944574293834231, -0.047150364377604115, -0.17131812086072928, 0.07313879798706346, -0.8273080800989953]
+    # ("max_height", "cumulative_height", "relative_height", "roughness", "hole_count", "rows_cleared")
+    trained_best = [-0.7911168974843971, -0.9946149316688104, 0.6567364663099897, -0.39506011206546365, -0.8614241326515506, -0.4410330203032128]
     AI.load_weights(trained_best)
 
-    while not AI.tetris_app.game_over and AI.tetris_app.drop_blocks < 1000:
+    while not AI.tetris_app.game_over and AI.tetris_app.drop_blocks < 3000:
         AI.tetris_app.new_stone()
         AI.tetris_app.print_board()
 

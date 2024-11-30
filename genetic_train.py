@@ -11,7 +11,7 @@ agentID = 1
 
 
 class Generation(object):
-    def __init__(self, num_gen_instances, mutation_val=0.05, alive_rate=0.5, iter_generation = 10):
+    def __init__(self, num_gen_instances, mutation_val=0.05, alive_rate=0.25, iter_generation = 20):
         self.num_gen_instances = num_gen_instances
         self.mutation_val = mutation_val
         self.alive_rate = alive_rate
@@ -159,6 +159,6 @@ class Generation(object):
 
 
 if __name__ == "__main__":
-    genetic_module = Generation(num_gen_instances=16)
+    genetic_module = Generation(num_gen_instances=32)
     results = genetic_module.train_gene()
     print(results)
