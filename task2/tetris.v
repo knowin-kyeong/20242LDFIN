@@ -41,6 +41,7 @@ module tetris(
 
     wire ready_from_board;
     wire resp_from_board;
+    wire [199:0] cur_board;
 
     reg req_analy_to_board;
 
@@ -77,26 +78,26 @@ module tetris(
                     $display("IN) Blk: %d", tile_type);
                     
                 end else if(host_ready == 1 && state == REQ_ROWS_TO_BOARD) begin
-                    $display("MAIN) REQ ROW: %d", cur_row_idx);
+                    // $display("MAIN) REQ ROW: %d", cur_row_idx);
 
                     row_req <= 1;
                     row <= cur_row_idx;
                     state <= RESP_ROWS_FROM_BOARD;
   
                 end else if(host_ready == 1 && state == RESP_ROWS_FROM_BOARD) begin
-                    $display("MAIN) RESP ROW: %d", cur_row_idx);
+                    // $display("MAIN) RESP ROW: %d", cur_row_idx);
 
                     cur_row_info <= row_info;
                     state <= REQ_SAVE_TO_BOARD;
 
                 end else if(ready_from_board == 1 && state == REQ_SAVE_TO_BOARD) begin
-                    $display("MAIN) REQ SAVE ROW: %d, BODY: %10b", cur_row_idx, cur_row_info);
+                    // $display("MAIN) REQ SAVE ROW: %d, BODY: %10b", cur_row_idx, cur_row_info);
 
                     req_save_to_board <= 1;
                     state <= RESP_SAVE_FROM_BOARD;
                 
                 end else if(resp_from_board == 1 && state == RESP_SAVE_FROM_BOARD) begin
-                    $display("MAIN) RESP SAVE ROW: %d", cur_row_idx);
+                    // $display("MAIN) RESP SAVE ROW: %d", cur_row_idx);
 
                     req_save_to_board <= 0;
                     cur_row_idx <= cur_row_idx + 1;
@@ -109,13 +110,13 @@ module tetris(
                     end
 
                 end else if(ready_from_board == 1 && state == REQ_ANALY_TO_BOARD) begin
-                    $display("MAIN) REQ ANALYSIS");
+                    // $display("MAIN) REQ ANALYSIS");
 
                     req_analy_to_board <= 1;
                     state <= RESP_ANALY_TO_BOARD;
 
                     end else if(resp_from_board == 1 && state == RESP_ANALY_TO_BOARD) begin
-                    $display("MAIN) RESQ ANALYSIS");
+                    // $display("MAIN) RESQ ANALYSIS");
 
                     req_analy_to_board <= 0;
                     state <= REQ_OPTIM_POS;
@@ -154,10 +155,10 @@ module tetris(
        end
     end //end always
 
-    calc calcUnit(clk, req_to_client, cur_block, 
+    calc calcUnit(clk, req_to_client, cur_block, cur_board,
                   resp_from_client, opt_col, opt_rotation);
 
     board_save board(clk, req_save_to_board, req_analy_to_board, cur_row_idx, cur_row_info, 
-                    ready_from_board, resp_from_board);
+                    ready_from_board, resp_from_board, cur_board);
 
 endmodule

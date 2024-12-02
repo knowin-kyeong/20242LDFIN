@@ -1,6 +1,3 @@
-`include "board_analysis.v"
-`include "board_nextsim.v"
-
 module calc(
     input clk,
     input req_to_client,
