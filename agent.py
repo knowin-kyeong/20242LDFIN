@@ -130,8 +130,7 @@ class TetrisAI(object):
         Gets the height of each column
     '''
 
-    @staticmethod
-    def get_column_heights(board):
+    def get_column_heights(self, board):
         # get the height of each column
         heights = [0 for i in board[0]]
 
@@ -266,6 +265,7 @@ if __name__ == '__main__':
     # ("max_height", "cumulative_height", "relative_height", "roughness", "hole_count", "rows_cleared")
     trained_best = [-0.7911168974843971, -0.9946149316688104, 0.6567364663099897, -0.39506011206546365, -0.8614241326515506, -0.4410330203032128]
     AI.load_weights(trained_best)
+    print(AI.get_weights())
 
     while not AI.tetris_app.game_over and AI.tetris_app.drop_blocks < 3000:
         AI.tetris_app.new_stone()
