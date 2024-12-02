@@ -50,7 +50,7 @@ module tetris(
 
     reg [3:0] opt_col;       // leftmost anchor index for N*N (N = 2, 3, 4)-sized block
     reg [1:0] opt_rotation;  // 0~3 Rotation modes
-    
+
     always @(posedge clk or posedge reset) begin
         if (reset) begin
             col <= 0;
@@ -59,6 +59,7 @@ module tetris(
             row_req <= 0;
             row <= 0;
         end 
+
         else begin
             // TODO
             if(initalized == 0) begin
@@ -75,7 +76,7 @@ module tetris(
 
                     state <= REQ_ROWS_TO_BOARD;
 
-                    $display("IN) Blk: %d", tile_type);
+                    // $display("IN) Blk: %d", tile_type);
                     
                 end else if(host_ready == 1 && state == REQ_ROWS_TO_BOARD) begin
                     // $display("MAIN) REQ ROW: %d", cur_row_idx);
@@ -122,22 +123,57 @@ module tetris(
                     state <= REQ_OPTIM_POS;
 
                 end else if(host_ready == 1 && state == REQ_OPTIM_POS) begin
-                    $display("MAIN) REQ OPT: %d", cur_block);
+                    // $display("MAIN) REQ OPT: %d", cur_block);
 
                     req_to_client <= 1;
                     state <= RESP_OPTIM_POS;
 
                 end else if(resp_from_client == 1 && state == RESP_OPTIM_POS) begin
-                    $display("MAIN) RESP OPT: %d, col = %d, rot = %d", cur_block, opt_col, opt_rotation);
+                    // $display("MAIN) DECISION OF %d, cur_block is %d", opt_col, cur_block); 
+                    case(cur_block)
+                        3'd1: begin
+                            col <= 9 - opt_col; 
+                        end
+
+                        3'd2: begin
+                            if(opt_rotation == 2'd1) col <= 9 - (opt_col + 1);
+                            else col <= 9 - opt_col; 
+                        end
+
+                        3'd3: begin
+                            if(opt_rotation == 2'd1) col <= 9 - (opt_col + 1);
+                            else col <= 9 - opt_col; 
+                        end
+
+                        3'd4: begin
+                            if(opt_rotation == 2'd1) col <= 9 - (opt_col + 1);
+                            else col <= 9 - opt_col; 
+                        end
+
+                        3'd5: begin
+                            if(opt_rotation == 2'd1) col <= 9 - (opt_col + 1);
+                            else col <= 9 - opt_col; 
+                        end
+
+                        3'd6: begin
+                            if(opt_rotation == 2'd1) col <= 9 - (opt_col + 1);
+                            else col <= 9 - opt_col; 
+                        end
+
+                        default: begin
+                           if(opt_rotation == 2'd1) col <= 9 - (opt_col + 2);
+                           else if (opt_rotation == 2'd3) col <= 9 - (opt_col + 1);
+                           else col <= 9 - opt_col; 
+                        end
+                    endcase
 
                     req_to_client <= 0;
-                    col <= opt_col;
                     rotation <= opt_rotation;
 
                     state <= REQ_SET_TO_BOARD;
 
                 end else if(host_ready == 1 && state == REQ_SET_TO_BOARD) begin
-                    $display("OUT) Blk : %d -> Res: %d %d", cur_block, col, rotation);
+                    // $display("OUT) Blk : %d -> Res: %d %d", cur_block, col, rotation);
 
                     set_tile <= 1;
 
