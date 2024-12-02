@@ -37,12 +37,4 @@ module board_save(
             ready_from_board <= 1;
         end
     end
-
-    reg [4:0] column_heights;           
-    reg [4:0] max_height;            
-    reg [9:0] cumulative_height;     // 누적 높이
-    reg [4:0] relative_height;       // 최대 높이 - 최소 높이
-    reg [9:0] roughness;             // 열 간의 높이 차이의 합
-    reg [9:0] hole_count;            // 구멍의 개수
-
 endmodule
