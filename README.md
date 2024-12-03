@@ -71,24 +71,24 @@ Client calculate the optimal solution for any arbitrary board, block placement c
            |                      |             |- - - - - - -> |             |
            |                      +-------------+               +-------------+
            |                             |                             |         
-           |                             v                             v
+           |                             |                             v
            |                             |                      +-------------+        board_nextsim.v
-           |                             |          Iterate  /--|             |- - - - - - - - - - - \  
-           |                             |     for all cases |  +-------------+        Simulate      |   
-           |                             |                   |         |          the next placement |                          
-           |                             |                   |         v             of the block    |  
-           |                             |                   |  +-------------+                      |
-           |                             |                   |  |             |- - - - - - - - - - - /
-           |                             |                   |  +-------------+               
-           |                             |                   |         |                        
-           |                             v                   |         v
-           |                             |                   |  +-------------+          board_analy.v                          
-           |                             |                   |  |             |- - - - - - - - - - - \  
-           |                             |                   |  +-------------+        Evaluate      |  
-           |                             |                   |         |          the next placement |                    
-           |                             v                   |         v             of the block    |  
-           |                             |                   |  +-------------+(cf. genetic_train.py)|  
-           |                             |                   \--|             |< - - - - - -- - - - -/  
+           |                             |       Iterate  /-----|             |- - - - - - - - - - - \  
+           |                             |      all cases |     +-------------+        Simulate      |   
+           |                             |                |            |          the next placement |                          
+           |                             |                |            v             of the block    |  
+           |                             |                |     +-------------+                      |
+           |                             |                |     |             |- - - - - - - - - - - /
+           |                             |                |     +-------------+               
+           |                             |                |            |                        
+           |                             |                |            v
+           |                             |                |     +-------------+          board_analy.v                          
+           |                             |                |     |             |- - - - - - - - - - - \  
+           |                             |                |     +-------------+        Evaluate      |  
+           |                             |                |            |          the next placement |                    
+           |                             |                |            v             of the block    |  
+           |                             |                |     +-------------+(cf. genetic_train.py)|  
+           |                             |                \-----|             |< - - - - - -- - - - -/  
            |                             |                      +-------------+                                            
            |                             |                             |                        
            |                             |                             |
