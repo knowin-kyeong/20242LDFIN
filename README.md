@@ -108,3 +108,11 @@ Client calculate the optimal solution for any arbitrary board, block placement c
 ```
 
 Chip area for top module '\tetris': 115072.864000 ( < 300000)
+
+
+## 3. Environment ##
+Same as LD24_final_project distribution.
+
+SKY130 LIBRARY = sky130_fd_sc_hd__tt_025C_1v80.lib 
+
+Verilog Version = 2005
