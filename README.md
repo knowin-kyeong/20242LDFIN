@@ -25,10 +25,10 @@ client calculate the best positions for I/O blocks.
            |                      |             |- - - - - - -> |             |
            |                      +-------------+               +-------------+
            |                             |                             |
-           v                             v          Recieve            v
-    +-------------+               +-------------+ optimal sol.  +-------------+   
-    |             |               |             |<- - - - - - - |             |   
-    +-------------+               +-------------+               +-------------+
+           |                             v          Recieve            v
+           |                      +-------------+ optimal sol.  +-------------+   
+           |                      |             |<- - - - - - - |             |   
+           |                      +-------------+               +-------------+
            |                             |
            v          Set block          v
     +-------------+to optimal sol.+-------------+
@@ -71,7 +71,7 @@ Client calculate the optimal solution for any arbitrary board, block placement c
            |                      |             |- - - - - - -> |             |
            |                      +-------------+               +-------------+
            |                             |                             |         
-           v                             v                             v
+           |                             v                             v
            |                             |                      +-------------+             
            |                             |          Iterate  /--|             |- - - - - - - - - - - \  board_nextsim.v
            |                             |     for all cases |  +-------------+                      |   
@@ -81,12 +81,12 @@ Client calculate the optimal solution for any arbitrary board, block placement c
            |                             |                   |  |             |- - - - - - - - - - - /
            |                             |                   |  +-------------+               
            |                             |                   |         |                        
-           v                             v                   |         v
+           |                             v                   |         v
            |                             |                   |  +-------------+                                            
            |                             |                   |  |             |- - - - - - - - - - - \  board_analy.v
            |                             |                   |  +-------------+                      |  
            |                             |                   |         |                             |  Evaluate the next placement                  
-           v                             v                   |         v                             |  of the block
+           |                             v                   |         v                             |  of the block
            |                             |                   |  +-------------+                      |   
            |                             |                   \--|             |< - - - - - -- - - - -/
            |                             |                      +-------------+                                            
@@ -96,10 +96,10 @@ Client calculate the optimal solution for any arbitrary board, block placement c
            |                             |                      |             |    optimal solution
            |                             |                      +-------------+
            |                             |                             |                        
-           v                             v                             v
-    +-------------+               +-------------+ optimal sol.  +-------------+   
-    |             |               |             |<- - - - - - - |             |   
-    +-------------+               +-------------+               +-------------+
+           |                             v                             v
+           |                      +-------------+ optimal sol.  +-------------+   
+           |                      |             |<- - - - - - - |             |   
+           |                      +-------------+               +-------------+
            |                             |
            v          Set block          v
     +-------------+to optimal sol.+-------------+
