@@ -1,6 +1,6 @@
 ## 1. task 1 ##
 A player - client model
-client calculate the best positions for I/O blocks.
+client calculate the optimal solution for I/O blocks.
                
 ```
           Host                        tetris.v                      calc.v
@@ -72,29 +72,29 @@ Client calculate the optimal solution for any arbitrary board, block placement c
            |                      +-------------+               +-------------+
            |                             |                             |         
            |                             v                             v
-           |                             |                      +-------------+             
-           |                             |          Iterate  /--|             |- - - - - - - - - - - \  board_nextsim.v
-           |                             |     for all cases |  +-------------+                      |   
-           |                             |                   |         |                             |  Simulate the next placement                       
-           |                             |                   |         v                             |  of the block
+           |                             |                      +-------------+        board_nextsim.v
+           |                             |          Iterate  /--|             |- - - - - - - - - - - \  
+           |                             |     for all cases |  +-------------+        Simulate      |   
+           |                             |                   |         |          the next placement |                          
+           |                             |                   |         v             of the block    |  
            |                             |                   |  +-------------+                      |
            |                             |                   |  |             |- - - - - - - - - - - /
            |                             |                   |  +-------------+               
            |                             |                   |         |                        
            |                             v                   |         v
-           |                             |                   |  +-------------+                                            
-           |                             |                   |  |             |- - - - - - - - - - - \  board_analy.v
-           |                             |                   |  +-------------+                      |  
-           |                             |                   |         |                             |  Evaluate the next placement                  
-           |                             v                   |         v                             |  of the block
-           |                             |                   |  +-------------+                      |  
-           |                             |                   \--|             |< - - - - - -- - - - -/  (Refer to the genetic_train.py)
+           |                             |                   |  +-------------+          board_analy.v                          
+           |                             |                   |  |             |- - - - - - - - - - - \  
+           |                             |                   |  +-------------+        Evaluate      |  
+           |                             |                   |         |          the next placement |                    
+           |                             v                   |         v             of the block    |  
+           |                             |                   |  +-------------+(cf. genetic_train.py)|  
+           |                             |                   \--|             |< - - - - - -- - - - -/  
            |                             |                      +-------------+                                            
            |                             |                             |                        
-           |                             |                             v
-           |                             |                      +-------------+  Determine what is the 
-           |                             |                      |             |    optimal solution
-           |                             |                      +-------------+
+           |                             |                             |
+           |                             |                             |   Determine what is the 
+           |                             |                             |     optimal solution
+           |                             |                             |
            |                             |                             |                        
            |                             v                             v
            |                      +-------------+ optimal sol.  +-------------+   
@@ -109,7 +109,9 @@ Client calculate the optimal solution for any arbitrary board, block placement c
 
 Chip area for top module '\tetris': 115072.864000 ( < 300000)
 
-Test Result: ~ 150 Line clears (Best = 224 Line clears)
+Test Result: ~ 150 Line clears 
+
+(Best = 224 Line clears)
 
 
 ## 3. Environment ##
