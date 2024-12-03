@@ -23,18 +23,19 @@ module board_analysis(
     reg [4:0] min_height;
 
     // NEGATE value of real trained weight in genetic_train.py
-    parameter MAX_HEIGHT_WEIGHT = 178;
-    parameter CUMULATIVE_HEIGHT_WEIGHT = 525;
-    parameter RELATIVE_HEIGHT_WEIGHT = 198;
-    parameter ROUGHNESS_WEIGHT = 284;
-    parameter HOLE_COUNT_WEIGHT = 685;
-    parameter CLEARED_LINES_WEIGHT = -873;
+    /* genetic_train.py (ver. 2) */
+    parameter MAX_HEIGHT_WEIGHT = 39511;
+    parameter CUMULATIVE_HEIGHT_WEIGHT = 745266;
+    parameter RELATIVE_HEIGHT_WEIGHT = -290263;
+    parameter ROUGHNESS_WEIGHT = 330122;
+    parameter HOLE_COUNT_WEIGHT = 631013;
+    parameter CLEARED_LINES_WEIGHT = -872804;
 
     parameter REQ_SCORE = 2'd0;
     parameter CALC_SCORE = 2'd1;
     parameter RECV_SCORE = 2'd2;
     reg [2:0] state = REQ_SCORE;
-
+    
     always @(posedge clk) begin
         
         if(state == REQ_SCORE && req_score == 1) begin
@@ -138,11 +139,24 @@ module board_analysis(
 
 endmodule
 
-/* practically found weights
+/* practically found weights (ver. 1)
     parameter MAX_HEIGHT_WEIGHT = 178;
     parameter CUMULATIVE_HEIGHT_WEIGHT = 525;
     parameter RELATIVE_HEIGHT_WEIGHT = 198;
     parameter ROUGHNESS_WEIGHT = 284;
     parameter HOLE_COUNT_WEIGHT = 685;
     parameter CLEARED_LINES_WEIGHT = -873;
+*/
+
+/* genetic_train.py (ver. 2)
+    {
+        'max_height': 0.0395105206789681, 
+        'cumulative_height': -0.7452658095158735, 
+        'relative_height': 0.2902629677655959, 
+        'roughness': -0.3301215337913299, 
+        'hole_count': -0.6310130023664553, 
+        'rows_cleared': 0.8728045079072444}, 
+        'play_score': 198, 
+        agent_idx': 20
+    }
 */

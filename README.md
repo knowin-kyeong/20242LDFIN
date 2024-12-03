@@ -107,7 +107,7 @@ Client calculate the optimal solution for any arbitrary board, block placement c
     +-------------+               +-------------+  
 ```
 
-Chip area for top module '\tetris': 115072.864000 ( < 300000)
+Chip area for top module '\tetris': 121301.337600 ( < 300000)
 
 Test Result: ~ 178 Line clears (Expected value in genetic_train.py, limited to 500 blocks) 
 

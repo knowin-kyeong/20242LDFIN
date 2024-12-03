@@ -15,7 +15,7 @@ module board_nextsim(
     parameter BLOCKS_IN_COL = 10;
 
     parameter BLOCKS_IN_ROW_EXT = 24;       // +4
-    parameter BLOCKS_IN_COL_EXT = 13;       // +2
+    parameter BLOCKS_IN_COL_EXT = 13;       // +3
     parameter BLOCK_SIZE = 4;
 
     reg [1:0] state = 0;
