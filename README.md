@@ -109,7 +109,7 @@ Client calculate the optimal solution for any arbitrary board, block placement c
 
 Chip area for top module '\tetris': 115072.864000 ( < 300000)
 
-Test Result: >500 line clears.
+Test Result: ~ 150 Line clears (Best = 224 Line clears)
 
 
 ## 3. Environment ##
