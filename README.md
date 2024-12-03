@@ -87,8 +87,8 @@ Client calculate the optimal solution for any arbitrary board, block placement c
            |                             |                   |  +-------------+                      |  
            |                             |                   |         |                             |  Evaluate the next placement                  
            |                             v                   |         v                             |  of the block
-           |                             |                   |  +-------------+                      |   
-           |                             |                   \--|             |< - - - - - -- - - - -/
+           |                             |                   |  +-------------+                      |  
+           |                             |                   \--|             |< - - - - - -- - - - -/  (Refer to the genetic_train.py)
            |                             |                      +-------------+                                            
            |                             |                             |                        
            |                             |                             v
@@ -108,6 +108,8 @@ Client calculate the optimal solution for any arbitrary board, block placement c
 ```
 
 Chip area for top module '\tetris': 115072.864000 ( < 300000)
+
+Test Result: >500 line clears.
 
 
 ## 3. Environment ##
