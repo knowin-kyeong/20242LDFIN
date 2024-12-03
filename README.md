@@ -49,7 +49,7 @@ Board saves the current Tetris board and return this to a client,
 Client calculate the optimal solution for any arbitrary board, block placement combinations.
 
 ```
-          Host                        tetris.v                      calc.v                     board_nextsim.v                board_analy.v
+          Host                        tetris.v                      calc.v               
     +-------------+ Receive block +-------------+               +-------------+   
     |             |- - - - - - - >|             |               |             |
     +-------------+               +-------------+               +-------------+
@@ -73,27 +73,27 @@ Client calculate the optimal solution for any arbitrary board, block placement c
            |                             |                             |         
            v                             v                             v
            |                             |                      +-------------+             
-           |                             |          Iterate  /--|             |- - - - - - - - - - - \   
-           |                             |     for all cases |  +-------------+                      |
-           |                             |                   |         |                             |                        
-           |                             |                   |         v                             |
+           |                             |          Iterate  /--|             |- - - - - - - - - - - \  board_nextsim.v
+           |                             |     for all cases |  +-------------+                      |   
+           |                             |                   |         |                             |  Simulate the next placement                       
+           |                             |                   |         v                             |  of the block
            |                             |                   |  +-------------+                      |
            |                             |                   |  |             |- - - - - - - - - - - /
            |                             |                   |  +-------------+               
            |                             |                   |         |                        
            v                             v                   |         v
            |                             |                   |  +-------------+                                            
-           |                             |                   |  |             |- - - - - - - - - - - \ 
-           |                             |                   |  +-------------+                      |
-           |                             |                   |         |                             |                     
-           v                             v                   |         v                             |
+           |                             |                   |  |             |- - - - - - - - - - - \  board_analy.v
+           |                             |                   |  +-------------+                      |  
+           |                             |                   |         |                             |  Evaluate the next placement                  
+           v                             v                   |         v                             |  of the block
            |                             |                   |  +-------------+                      |   
            |                             |                   \--|             |< - - - - - -- - - - -/
            |                             |                      +-------------+                                            
            |                             |                             |                        
            |                             |                             v
-           |                             |                      +-------------+   
-           |                             |                      |             |
+           |                             |                      +-------------+  Determine what is the 
+           |                             |                      |             |    optimal solution
            |                             |                      +-------------+
            |                             |                             |                        
            v                             v                             v
