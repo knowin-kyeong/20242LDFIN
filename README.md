@@ -1,13 +1,110 @@
 ## 1. task 1 ##
 A player - client model
 client calculate the best positions for I/O blocks.
+               
+```
+          Host                        tetris.v                      calc.v
+    +-------------+ Receive block +-------------+               +-------------+   
+    |             |- - - - - - - >|             |               |             |
+    +-------------+               +-------------+               +-------------+
+           |                             |                             |
+           v           Request           v                             |      
+    +-------------+   top 2 rows  +-------------+                      |
+    |             |<- - - - - - - |             |                      |
+    +-------------+               +-------------+                      |
+           |                             |                             |
+           |           Recieve           v                             |
+    +-------------+   top 2 rows  +-------------+                      |
+    |             | - - - - - - ->|             |                      |
+    +-------------+               +-------------+                      |
+           |                             |                             |
+           |                             |                             |
+           |                             |                             |
+           |                             v          Transfer           |            
+           |                      +-------------+  top 2 rows   +-------------+               
+           |                      |             |- - - - - - -> |             |
+           |                      +-------------+               +-------------+
+           |                             |                             |
+           v                             v          Recieve            v
+    +-------------+               +-------------+ optimal sol.  +-------------+   
+    |             |               |             |<- - - - - - - |             |   
+    +-------------+               +-------------+               +-------------+
+           |                             |
+           v          Set block          v
+    +-------------+to optimal sol.+-------------+
+    |             |<--------------|             |
+    +-------------+               +-------------+  
+```
 
 Chip area for top module '\tetris': 2623.766400 ( < 5000)
 
-## 2. task 2 ##
-A player - board - client model
+Test Result: >500 line clears.
 
-board saves the given states and return to client,
-client calculate the best positions for any arbitrary blocks
+
+## 2. task 2 ##
+A player - board - client model.
+
+Board saves the current Tetris board and return this to a client,
+
+Client calculate the optimal solution for any arbitrary board, block placement combinations.
+
+```
+          Host                        tetris.v                      calc.v                     board_nextsim.v                board_analy.v
+    +-------------+ Receive block +-------------+               +-------------+   
+    |             |- - - - - - - >|             |               |             |
+    +-------------+               +-------------+               +-------------+
+           |                             |                             |
+           v           Request           v                             |      
+    +-------------+   each row    +-------------+                      |
+    |             |<- - - - - - - |             |    Save at           |
+    +-------------+               +-------------+  board_save.v        |
+           |                             |--------------\              |
+           |           Recieve           v              |              |
+    +-------------+   each row    +-------------+       |              |
+    |             | - - - - - - ->|             |       |              |
+    +-------------+               +-------------+       |              |
+           |                             |              |              |
+           |                             |              |              |
+           |                             |              |              |
+           |                             v          Transfer           |            
+           |                      +-------------+   all rows    +-------------+               
+           |                      |             |- - - - - - -> |             |
+           |                      +-------------+               +-------------+
+           |                             |                             |         
+           v                             v                             v
+           |                             |                      +-------------+             
+           |                             |          Iterate  /--|             |- - - - - - - - - - - \   
+           |                             |     for all cases |  +-------------+                      |
+           |                             |                   |         |                             |                        
+           |                             |                   |         v                             |
+           |                             |                   |  +-------------+                      |
+           |                             |                   |  |             |- - - - - - - - - - - /
+           |                             |                   |  +-------------+               
+           |                             |                   |         |                        
+           v                             v                   |         v
+           |                             |                   |  +-------------+                                            
+           |                             |                   |  |             |- - - - - - - - - - - \ 
+           |                             |                   |  +-------------+                      |
+           |                             |                   |         |                             |                     
+           v                             v                   |         v                             |
+           |                             |                   |  +-------------+                      |   
+           |                             |                   \--|             |< - - - - - -- - - - -/
+           |                             |                      +-------------+                                            
+           |                             |                             |                        
+           |                             |                             v
+           |                             |                      +-------------+   
+           |                             |                      |             |
+           |                             |                      +-------------+
+           |                             |                             |                        
+           v                             v                             v
+    +-------------+               +-------------+ optimal sol.  +-------------+   
+    |             |               |             |<- - - - - - - |             |   
+    +-------------+               +-------------+               +-------------+
+           |                             |
+           v          Set block          v
+    +-------------+to optimal sol.+-------------+
+    |             |<--------------|             |
+    +-------------+               +-------------+  
+```
 
 Chip area for top module '\tetris': 115072.864000 ( < 300000)

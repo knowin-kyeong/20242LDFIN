@@ -259,7 +259,7 @@ class TetrisApp(object):
         return 0
 
     def get_score(self):
-        return self.drop_blocks + 10 * self.cleared_lines
+        return self.cleared_lines
 
     def get_state(self):
         return {"board": numpy.copy(self.board),
