@@ -1,7 +1,7 @@
 # Author: Thomas Young
-# Modified bu Juwon Seo (knowin-kyeong)
+# Modified by Juwon Seo (knowin-kyeong)
 
-import numpy, time, threading, random
+import numpy, random
 
 from agent import TetrisAI
 
@@ -11,14 +11,13 @@ agentID = 1
 
 
 class Generation(object):
-    def __init__(self, num_gen_instances, mutation_val=0.05, alive_rate=0.25, iter_generation = 20):
+    def __init__(self, num_gen_instances, mutation_val=0.05, alive_rate=0.25, iter_generation=20):
         self.num_gen_instances = num_gen_instances
         self.mutation_val = mutation_val
         self.alive_rate = alive_rate
 
         self.generation = 1
         self.iter_generation = iter_generation
-
 
         self.agents = []
         self.results = None
@@ -68,7 +67,7 @@ class Generation(object):
         initial_new_weights = new_weights
         cnt = 0
         prev_comb = []
-        while cnt < (self.num_gen_instances - len(initial_new_weights))//2:
+        while cnt < (self.num_gen_instances - len(initial_new_weights)) // 2:
             idx_1 = random.randint(0, len(initial_new_weights) - 1)
             idx_2 = random.randint(0, len(initial_new_weights) - 1)
             if idx_1 > idx_2:

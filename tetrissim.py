@@ -26,7 +26,7 @@ import copy, numpy
 # THE SOFTWARE.
 
 # Author: Kevin Chabowski
-# Modified bu Juwon Seo (knowin-kyeong)
+# Modified by Juwon Seo (knowin-kyeong)
 
 # color mapping
 COLOR_MAP = {
@@ -90,11 +90,11 @@ def check_collision(board, shape, offset):
 
 def remove_row(board, row):
     board = np.delete(board, row, axis=0)
-    board = np.insert(board, 4, [0 for i in range(config['cols'])], axis=0)
+    board = np.insert(board, 4, [0 for _ in range(config['cols'])], axis=0)
     return board
 
 
-def join_matrixes(mat1, mat2, mat2_off):
+def join_matrices(mat1, mat2, mat2_off):
     mat3 = copy.deepcopy(mat1)
     off_x, off_y = mat2_off
 
@@ -111,8 +111,8 @@ def join_matrixes(mat1, mat2, mat2_off):
 
 
 def new_board():
-    board = [[9 for x in range(config['cols'])] for y in range(4)]
-    board += [[0 for x in range(config['cols'])] for y in range(config['rows'])]
+    board = [[9 for _ in range(config['cols'])] for _ in range(4)]
+    board += [[0 for _ in range(config['cols'])] for _ in range(config['rows'])]
     return board
 
 
@@ -172,7 +172,7 @@ class TetrisApp(object):
         print("idx [9876543210]")
         print("Score: {}".format(self.get_score()))
         print("Clear Lines: {}".format(self.cleared_lines))
-        print("Dropped Blockes: {}".format(self.drop_blocks))
+        print("Dropped Blocks: {}".format(self.drop_blocks))
 
     def print_both(self):
 
@@ -182,7 +182,7 @@ class TetrisApp(object):
         print("idx [9876543210]")
         print("Score: {}".format(self.get_score()))
         print("Clear Lines: {}".format(self.cleared_lines))
-        print("Dropped Blockes: {}".format(self.drop_blocks))
+        print("Dropped Blocks: {}".format(self.drop_blocks))
 
     def move(self, col):
         effective_width = 0
@@ -213,7 +213,7 @@ class TetrisApp(object):
             self.stone_y += 1
         self.stone_y -= 1
 
-        self.board = join_matrixes(self.board, self.stone, (self.stone_x, self.stone_y))
+        self.board = join_matrices(self.board, self.stone, (self.stone_x, self.stone_y))
 
         changed = True
         while changed:

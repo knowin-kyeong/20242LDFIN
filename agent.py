@@ -1,5 +1,5 @@
 # Author: Thomas Young
-# Modified bu Juwon Seo (knowin-kyeong)
+# Modified by Juwon Seo (knowin-kyeong)
 import numpy, random
 
 from tetrissim import TetrisApp
@@ -132,7 +132,7 @@ class TetrisAI(object):
 
     def get_column_heights(self, board):
         # get the height of each column
-        heights = [0 for i in board[0]]
+        heights = [0 for _ in board[0]]
 
         for y, row in enumerate(board[::-1]):
             for x, val in enumerate(row):
@@ -155,7 +155,7 @@ class TetrisAI(object):
         return sum(self.get_column_heights(board))
 
     '''
-        Gets the difference betweent he shortest and tallest height
+        Gets the difference between he shortest and tallest height
     '''
 
     def get_relative_height(self, board):
@@ -259,7 +259,7 @@ class TetrisAI(object):
 if __name__ == '__main__':
     AI = TetrisAI()
 
-    #AI.set_init_weights()
+    # AI.set_init_weights()
 
     # Pre-trained result weights
     # ("max_height", "cumulative_height", "relative_height", "roughness", "hole_count", "rows_cleared")
