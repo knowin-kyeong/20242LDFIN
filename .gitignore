@@ -5,3 +5,6 @@ matris
 /.idea/
 __pycache__/
 Data/
+
+testfunc.py
+text_converter.py

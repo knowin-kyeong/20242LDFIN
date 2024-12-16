@@ -57,7 +57,7 @@ Client calculate the optimal solution for any arbitrary board, block placement c
            v           Request           v                             |      
     +-------------+   each row    +-------------+                      |
 /---|             |<- - - - - - - |             |<-\  Save at          |
-|   +-------------+               +-------------+  |   board_save.v     |
+|   +-------------+               +-------------+  |   board_save.v    |
 |          |                             |--------------\              |
 |          |           Recieve           v         |    |              |
 |   +-------------+   each row    +-------------+  |    |              |
@@ -107,11 +107,14 @@ Client calculate the optimal solution for any arbitrary board, block placement c
     +-------------+               +-------------+  
 ```
 
-Chip area for top module '\tetris': 121301.337600 ( < 300000)
+Chip area for top module '\tetris': 204513.644800 ( < 300000)
 
-Test Result: ~ 178 Line clears (Expected value in genetic_train.py, limited to 500 blocks) 
+Test Result: Testing...
 
-(Best = 621 Line clears)
+(Depreciated)
+
+Best = 621 Line clears
+
 ![image](https://github.com/user-attachments/assets/cc557717-5e13-4d69-9e30-b51a4b73744c)
 
 ## 3. Environment ##

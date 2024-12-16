@@ -11,16 +11,19 @@ COLOR_MAP = tetrissim.COLOR_MAP
 # The configuration
 config = tetrissim.config
 
+# block seq
+seq_arr = tetrissim.seq_arr
 
 class TetrisAI(object):
 
-    def __init__(self, name=None):
+    def __init__(self, name=None, seq_type=0, seq_random=False):
         self.name = "AI" if name is None else name
-        self.tetris_app = TetrisApp()
+        self.tetris_app = TetrisApp(seq_type=seq_type, seq_random=seq_random)
 
         ''' set features wanted here MAKE SURE TO CHANGE FUNCTIONS FOR EVALUATION BELOW'''
-        self.features = ("max_height", "cumulative_height", "relative_height", "roughness", "hole_count", "rows_cleared")
-        # self.features = ("cumulative_height", "roughness", "hole_count", "rows_cleared")
+        self.features = ("max_height", "cumulative_height", "relative_height", "roughness",
+                         "hole_count", "rows_cleared", "row_transition", "col_transition", "deepest_well"
+                         )
         self.weights = None
 
     '''
@@ -56,8 +59,8 @@ class TetrisAI(object):
 
         # contains all the board orientations possible with the current stone
         board_and_stones = []
-        for rot in range(4):
-            for col in range(config['cols']):
+        for col in range(config['cols']-1, -1, -1):
+            for rot in range(4):
                 self.tetris_app.set_board(cur_state["board"])
                 self.tetris_app.set_stone(cur_state["stone"])
                 self.tetris_app.cleared_lines = cur_state["cleared_lines"]
@@ -113,7 +116,11 @@ class TetrisAI(object):
                  self.get_hole_count(board) * self.weights['hole_count'],
                  rows_cleared * self.weights['rows_cleared'],
                  self.get_max_height(board) * self.weights["max_height"],
-                 self.get_relative_height(board) * self.weights["relative_height"]]
+                 self.get_relative_height(board) * self.weights["relative_height"],
+                 self.get_row_transition(board) * self.weights["row_transition"],
+                 self.get_col_transition(board) * self.weights["col_transition"],
+                 self.get_deepest_well(board) * self.weights["deepest_well"]
+                 ]
 
         return {
             "cumulative_height": self.get_cumulative_height(board),
@@ -122,6 +129,9 @@ class TetrisAI(object):
             "rows_cleared": rows_cleared,
             "max_height": self.get_max_height(board),
             "relative_height": self.get_relative_height(board),
+            "row_transition": self.get_row_transition(board),
+            "col_transition": self.get_col_transition(board),
+            "deepest_well": self.get_deepest_well(board),
             "weights": self.weights,
             "eval_score": sum(evals)
         }
@@ -201,6 +211,62 @@ class TetrisAI(object):
         Check how many rows will be cleared in this config
     '''
 
+    def get_row_transition(self, board):
+        r_trans = 0
+        max_height = self.get_max_height(board)
+        for y, row in enumerate(board[::-1]):
+            if y >= max_height:
+                continue
+            prev = (1 if (row[0] != 0 and row[0] != 9) else 0)
+
+            for x, val in enumerate(row):
+                if x == 0:
+                    continue
+                curr = (1 if (val != 0 and val != 9) else 0)
+                if curr != prev:
+                    r_trans += 1
+                    prev = curr
+        return r_trans
+
+    def get_col_transition(self, board):
+        c_trans = 0
+
+        col_height = self.get_column_heights(board)
+        for col_idx in range(config['cols']):
+            prev = (1 if (board[config['rows']+4 -1][col_idx] != 0) else 0)
+            if col_height[col_idx] <= 1:
+                continue
+
+            for y, row in enumerate(board[::-1]):
+                if y == 0:
+                    continue
+                if y >= col_height[col_idx]:
+                    break
+
+                cur = (1 if (row[col_idx] != 0 and row[col_idx] != 9) else 0)
+                if cur != prev:
+                    c_trans += 1
+                    prev = cur
+        return c_trans
+
+    def get_deepest_well(self, board):
+        max_depth = 0
+        col_height = self.get_column_heights(board)
+        for col_idx in range(config['cols']):
+            if col_idx > 0 and col_height[col_idx] >= col_height[col_idx - 1]:
+                continue
+            elif col_idx < config['cols'] - 1 and col_height[col_idx] >= col_height[col_idx + 1]:
+                continue
+            else:
+                if col_idx == 0:
+                    temp_depth = col_height[col_idx + 1] - col_height[col_idx]
+                elif col_idx == config['cols'] - 1:
+                    temp_depth = col_height[col_idx - 1] - col_height[col_idx]
+                else:
+                    temp_depth = min(col_height[col_idx - 1], col_height[col_idx + 1]) - col_height[col_idx]
+                max_depth = max(max_depth, temp_depth)
+        return max_depth
+
     def analyze_evaluate_result(self, eval_board_and_stone):
         max_eval = None
         best_ebs = None
@@ -211,20 +277,27 @@ class TetrisAI(object):
         return best_ebs
 
     def play_game(self):
-        while not self.tetris_app.game_over and self.tetris_app.drop_blocks < 500:
-            self.tetris_app.new_stone()
+        score = 0
 
-            bs_dict = self.get_possible_boards()
-            ebs_dict = self.evaluate_possible_boards(bs_dict)
-            best_ebs = self.analyze_evaluate_result(ebs_dict)
-            if best_ebs is not None:
-                self.tetris_app.move_rotation_drop(best_ebs['action_col'], best_ebs['action_rot'])
-            else:
-                self.tetris_app.move_rotation_drop(0, 0)
+        for x in range(len(seq_arr)):
+            self.tetris_app = TetrisApp(seq_type = x)
+
+            while not self.tetris_app.game_over and self.tetris_app.drop_blocks < len(seq_arr[0]):
+                self.tetris_app.new_stone()
+
+                bs_dict = self.get_possible_boards()
+                ebs_dict = self.evaluate_possible_boards(bs_dict)
+                best_ebs = self.analyze_evaluate_result(ebs_dict)
+                if best_ebs is not None:
+                    self.tetris_app.move_rotation_drop(best_ebs['action_col'], best_ebs['action_rot'])
+                else:
+                    self.tetris_app.move_rotation_drop(0, 0)
+
+            score += self.tetris_app.get_score()
 
         return {
             "weights": self.weights,
-            "play_score": self.tetris_app.get_score()
+            "play_score": score
         }
 
     '''
@@ -242,7 +315,7 @@ class TetrisAI(object):
                     len(self.features)))
 
             for idx in range(len(self.features)):
-                self.weights[self.features[idx]] = random.uniform(-0.1, 0.1) + seed[idx]
+                self.weights[self.features[idx]] = seed[idx]
 
         for idx in range(len(self.features)):
             self.weights[self.features[idx]] = random.uniform(-1, 1)
@@ -257,31 +330,85 @@ class TetrisAI(object):
 
 
 if __name__ == '__main__':
-    AI = TetrisAI()
+    for x in range(len(seq_arr)):
+        AI = TetrisAI(seq_type=x)
 
-    # AI.set_init_weights()
+        # Random Initialization
+        # AI.set_init_weights()
 
-    # Pre-trained result weights
-    # ("max_height", "cumulative_height", "relative_height", "roughness", "hole_count", "rows_cleared")
-    trained_best = [-0.7911168974843971, -0.9946149316688104, 0.6567364663099897, -0.39506011206546365, -0.8614241326515506, -0.4410330203032128]
-    AI.load_weights(trained_best)
-    print(AI.get_weights())
+        # Pre-trained result weights
+        # self.features = ("max_height", "cumulative_height", "relative_height", "roughness",
+        #                 "hole_count", "rows_cleared", "row_transition", "col_transition",
+        #                 "deepest_well")
 
-    while not AI.tetris_app.game_over and AI.tetris_app.drop_blocks < 3000:
-        AI.tetris_app.new_stone()
-        AI.tetris_app.print_board()
+        trained_best = [-0.6402616941177253, -0.9057227254992681, 0.6629232398286269, -0.30333012819140825,
+                        -0.9862193439177145, -0.8224629285758067, -0.7531236446218958, -0.8199832628897716,
+                        -0.21988398773744078]
+        AI.load_weights(trained_best)
+        # print(AI.get_weights())
 
-        # input('Press Any key to continue')
-        print('Calculating...')
-        bs_dict = AI.get_possible_boards()
-        ebs_dict = AI.evaluate_possible_boards(bs_dict)
-        best_ebs = AI.analyze_evaluate_result(ebs_dict)
+        while not AI.tetris_app.game_over and AI.tetris_app.drop_blocks < len(seq_arr[0]):
+            AI.tetris_app.new_stone()
 
-        if best_ebs is not None:
-            # print(best_ebs['action_col'], best_ebs['action_rot'])
-            AI.tetris_app.move_rotation_drop(best_ebs['action_col'], best_ebs['action_rot'])
-        else:
-            AI.tetris_app.move_rotation_drop(0, 0)
+            # For Debugging
 
-    if AI.tetris_app.game_over:
-        AI.tetris_app.print_both()
+            # input('Press Any key to continue')
+
+            # ('Calculating...')
+            bs_dict = AI.get_possible_boards()
+            ebs_dict = AI.evaluate_possible_boards(bs_dict)
+            best_ebs = AI.analyze_evaluate_result(ebs_dict)
+
+            if best_ebs is not None:
+                AI.tetris_app.move_rotation_drop(best_ebs['action_col'], best_ebs['action_rot'])
+
+                '''
+                AI.tetris_app.print_board()
+
+                print(best_ebs['action_col'], best_ebs['action_rot'])
+
+                print("max_height {} * weight {} = temp1 {}".format(
+                    best_ebs['eval']["max_height"], best_ebs['eval']["weights"]["max_height"],
+                    best_ebs['eval']["max_height"]*best_ebs['eval']["weights"]["max_height"]))
+
+                print("cumulative_height {} * weight {} = temp2 {}".format(
+                    best_ebs['eval']["cumulative_height"], best_ebs['eval']["weights"]["cumulative_height"],
+                    best_ebs['eval']["cumulative_height"] * best_ebs['eval']["weights"]["cumulative_height"]))
+
+                print("relative_height {} * weight {} = temp3 {}".format(
+                    best_ebs['eval']["relative_height"], best_ebs['eval']["weights"]["relative_height"],
+                    best_ebs['eval']["relative_height"] * best_ebs['eval']["weights"]["relative_height"]))
+
+                print("roughness {} * weight {} = temp1 {}".format(
+                    best_ebs['eval']["roughness"], best_ebs['eval']["weights"]["roughness"],
+                    best_ebs['eval']["roughness"] * best_ebs['eval']["weights"]["roughness"]))
+
+                print("hole_count {} * weight {} = temp1 {}".format(
+                    best_ebs['eval']["hole_count"], best_ebs['eval']["weights"]["hole_count"],
+                    best_ebs['eval']["hole_count"] * best_ebs['eval']["weights"]["hole_count"]))
+
+                print("rows_cleared {} * weight {} = temp1 {}".format(
+                    best_ebs['eval']["rows_cleared"], best_ebs['eval']["weights"]["rows_cleared"],
+                    best_ebs['eval']["rows_cleared"] * best_ebs['eval']["weights"]["rows_cleared"]))
+
+                print("row_transition {} * weight {} = temp1 {}".format(
+                    best_ebs['eval']["row_transition"], best_ebs['eval']["weights"]["row_transition"],
+                    best_ebs['eval']["row_transition"] * best_ebs['eval']["weights"]["row_transition"]))
+
+                print("col_transition {} * weight {} = temp1 {}".format(
+                    best_ebs['eval']["col_transition"], best_ebs['eval']["weights"]["col_transition"],
+                    best_ebs['eval']["col_transition"] * best_ebs['eval']["weights"]["col_transition"]))
+
+                print("deepest_well {} * weight {} = temp1 {}".format(
+                    best_ebs['eval']["deepest_well"], best_ebs['eval']["weights"]["deepest_well"],
+                    best_ebs['eval']["deepest_well"] * best_ebs['eval']["weights"]["deepest_well"]))
+
+                print("total score sum = {}".format(
+                    best_ebs['eval']["eval_score"]))
+                '''
+
+            else:
+                AI.tetris_app.move_rotation_drop(0, 0)
+
+        if AI.tetris_app.game_over:
+            AI.tetris_app.print_both()

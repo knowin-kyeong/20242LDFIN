@@ -8,6 +8,7 @@ module board_nextsim(
 
     output reg valid,
     output reg [199:0] next_board,
+    output reg [9:0] cleared_lines,
     output reg sim_ready   
 );
     
@@ -23,7 +24,7 @@ module board_nextsim(
     reg [311:0] buffered_board;    // 24*13 - 1
     reg [15:0] new_block;
 
-    reg [5:0] col_idx, row_idx;
+    reg signed [6:0] col_idx, row_idx, shift_row_idx;
 
     reg [5:0] merge_row_offset;   // board<row_offset, 0> = block<0, 0>
     reg [2:0] merged_row_idx;
@@ -158,6 +159,24 @@ module board_nextsim(
                     buffered_board[(merge_row_offset + merged_row_idx) * BLOCKS_IN_COL_EXT + (cur_col + 3) -: BLOCK_SIZE] 
                     | new_block[merged_row_idx * BLOCK_SIZE + 3 -: BLOCK_SIZE];
             end
+
+
+            cleared_lines = 0;
+            for(row_idx = BLOCKS_IN_ROW_EXT - 1; row_idx >= 0; row_idx = row_idx - 1) begin
+                if(buffered_board[BLOCKS_IN_COL_EXT * row_idx + 3 +: BLOCKS_IN_COL] == 10'b1111111111) begin
+                    for (shift_row_idx = row_idx; shift_row_idx > 0; shift_row_idx = shift_row_idx - 1) begin
+                        buffered_board[BLOCKS_IN_COL_EXT * shift_row_idx + 3 +: BLOCKS_IN_COL] = 
+                        buffered_board[BLOCKS_IN_COL_EXT * (shift_row_idx - 1) + 3 +: BLOCKS_IN_COL];
+                    end
+                    buffered_board[0 +: BLOCKS_IN_COL_EXT] = 13'b0;
+                    cleared_lines = cleared_lines + 1;
+
+                    // we have to check this line again..
+                    row_idx = row_idx + 1; 
+                end
+
+            end
+
 
             valid = 1;
             for(row_idx = 0; row_idx < BLOCK_SIZE; row_idx = row_idx + 1) begin

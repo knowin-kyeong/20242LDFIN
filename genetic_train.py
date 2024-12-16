@@ -2,6 +2,7 @@
 # Modified by Juwon Seo (knowin-kyeong)
 
 import numpy, random
+from concurrent.futures import ProcessPoolExecutor  # For Parallel training
 
 from agent import TetrisAI
 
@@ -11,7 +12,7 @@ agentID = 1
 
 
 class Generation(object):
-    def __init__(self, num_gen_instances, mutation_val=0.05, alive_rate=0.25, iter_generation=20):
+    def __init__(self, num_gen_instances, mutation_val=0.05, alive_rate=0.25, iter_generation=10):
         self.num_gen_instances = num_gen_instances
         self.mutation_val = mutation_val
         self.alive_rate = alive_rate
@@ -33,23 +34,24 @@ class Generation(object):
     Saves data from previous generation, preforms selection, crossover, and mutation
     '''
 
+    def play_agent(self, agent, idx):
+        result = agent.play_game()
+        print("Score for agent idx {} : {}".format(idx, result['play_score']))
+        return {
+            "weights": result['weights'],
+            "play_score": result['play_score'],
+            "agent_idx": idx
+        }
+
     def play_gen(self):
         if self.generation <= self.iter_generation:
             print("{}th Generation is started".format(self.generation))
         else:
             print("Collecting the results...")
 
-        results = []
-        for idx, agent in enumerate(self.agents):
-            result = agent.play_game()
-            results.append(
-                {
-                    "weights": result['weights'],
-                    "play_score": result['play_score'],
-                    "agent_idx": idx
-                }
-            )
-            print("Score for agent idx {} : {}".format(idx, result['play_score']))
+        with ProcessPoolExecutor() as executor:
+            futures = [executor.submit(self.play_agent, agent, idx) for idx, agent in enumerate(self.agents)]
+            results = [future.result() for future in futures]
 
         self.results = results
 
