@@ -109,13 +109,23 @@ Client calculate the optimal solution for any arbitrary board, block placement c
 
 Chip area for top module '\tetris': 204513.644800 ( < 300000)
 
-Test Result: Testing...
+Test Result
 
-(Depreciated)
+1.txt) 3524 lines
 
-Best = 621 Line clears
+![image](https://github.com/user-attachments/assets/81267eb0-98e3-4440-8517-864f21017345)
 
-![image](https://github.com/user-attachments/assets/cc557717-5e13-4d69-9e30-b51a4b73744c)
+2.txt) 426 lines
+
+![image](https://github.com/user-attachments/assets/8752f878-a777-438a-ba2c-f7ce37c181b7)
+
+3.txt) 1925 lines
+
+![image](https://github.com/user-attachments/assets/72278b0a-9836-4a7c-a235-62890786f8a0)
+
+random) 1866 lines
+
+![image](https://github.com/user-attachments/assets/33049869-a112-4689-b1a9-af17b4ddbb3b)
 
 ## 3. Environment ##
 Same as LD24_final_project distribution.
